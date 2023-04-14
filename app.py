@@ -175,6 +175,11 @@ def updateProductById(id):
         sql = "UPDATE products SET productName = %s, price = %s WHERE id = %s"
         value = (data['productName'], data['price'], id)
         cursor.execute(sql, value)
+        if cursor.rowcount == 0:
+            return jsonify({
+                "data": "No product with the given ID was found",
+                "code": 404
+            }), 404
         db.commit()
         return jsonify({
             "data": "1 Record Affected",
@@ -190,9 +195,14 @@ def updateProductById(id):
 @token_required
 def deleteProductById(id):
     try:
-        data = request.json
         cursor = db.cursor()
         cursor.execute("DELETE FROM products WHERE id = %s", (id,))
+        if cursor.rowcount == 0:
+            return jsonify({
+                "data": "No product with the given ID was found",
+                "code": 404
+            }), 404
+        db.commit()
         return jsonify({
             "data": "1 Record Deleted",
             "code": 200
