@@ -4,11 +4,13 @@ import jwt
 import datetime
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
-import pytz
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "LDblvz6FvtHHRbNCcsAIk6h3m51tdrGf"
 app.config["DEBUG"]=True
+app.config['MYSQL_HOST'] = '127.0.0.1'
+app.config['MYSQL_UNIX_SOCKET'] = 'TCP'
 
 def token_required(f):
     @wraps(f)
@@ -30,9 +32,9 @@ def token_required(f):
     return decorator
 
 db = mysql.connector.connect(
-    host = "localhost",
+    host = "127.0.0.1",
     user = "root",
-    passwd = "secret",
+    passwd = "",
     database = "flask_product",
     auth_plugin = "mysql_native_password"
 )
@@ -60,7 +62,7 @@ def login():
             }, app.config["SECRET_KEY"])
             return jsonify({
                 "data": "Login Success",
-                "token": token.decode(),
+                "token": token,
                 "code": 200
             }), 200
         else:
