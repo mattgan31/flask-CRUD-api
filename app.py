@@ -32,7 +32,7 @@ def token_required(f):
 db = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    passwd = "",
+    passwd = "secret",
     database = "flask_product",
     auth_plugin = "mysql_native_password"
 )
@@ -40,6 +40,7 @@ db = mysql.connector.connect(
 @app.route("/login", endpoint="login", methods = ["POST"])
 def login():
     try:
+        print(datetime.datetime.utcnow())
         data = request.json
         cursor = db.cursor()
         sql = "SELECT * FROM users WHERE username=%s"
@@ -56,10 +57,10 @@ def login():
             token = jwt.encode({
                 "user": data["username"],
                 "exp": datetime.datetime.utcnow()+datetime.timedelta(minutes=30)
-            }, app.config["SECRET_KEY"]).encode("UTF-8")
+            }, app.config["SECRET_KEY"])
             return jsonify({
                 "data": "Login Success",
-                "token": token.decode("UTF-8"),
+                "token": token.decode(),
                 "code": 200
             }), 200
         else:
