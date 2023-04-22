@@ -5,6 +5,7 @@ import datetime
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "LDblvz6FvtHHRbNCcsAIk6h3m51tdrGf"
 
@@ -18,7 +19,7 @@ def token_required(f):
                 "code": 403
             }), 403
         try:
-            data = jwt.decode(token, app.config["SECRET_KEY"])
+            data = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
         except:
             return jsonify({
                 "data": "Token Invalid",
@@ -28,9 +29,9 @@ def token_required(f):
     return decorator
 
 db = mysql.connector.connect(
-    host = "localhost",
+    host = "127.0.0.1",
     user = "root",
-    passwd = "secret",
+    passwd = "",
     database = "flask_product",
     auth_plugin = "mysql_native_password"
 )
@@ -38,6 +39,7 @@ db = mysql.connector.connect(
 @app.route("/login", endpoint="login", methods = ["POST"])
 def login():
     try:
+        print(datetime.datetime.utcnow())
         data = request.json
         cursor = db.cursor()
         sql = "SELECT * FROM users WHERE username=%s"
@@ -57,7 +59,7 @@ def login():
             }, app.config["SECRET_KEY"])
             return jsonify({
                 "data": "Login Success",
-                "token": token.decode("UTF-8"),
+                "token": token,
                 "code": 200
             }), 200
         else:
