@@ -8,9 +8,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "LDblvz6FvtHHRbNCcsAIk6h3m51tdrGf"
-app.config["DEBUG"]=True
-app.config['MYSQL_HOST'] = '127.0.0.1'
-app.config['MYSQL_UNIX_SOCKET'] = 'TCP'
 
 def token_required(f):
     @wraps(f)
